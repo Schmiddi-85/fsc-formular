@@ -87,6 +87,23 @@
 <script>
   const select = document.getElementById('komponentenAnzahl');
   const container = document.getElementById('komponentenContainer');
+  let materialien = [];
+
+  // Materialliste laden
+  async function ladeMaterialien() {
+    try {
+      const res = await fetch('fsc-materialien.json');
+      if (!res.ok) throw new Error("Materialliste konnte nicht geladen werden");
+      materialien = await res.json();
+    } catch (err) {
+      console.error(err);
+      alert("Fehler beim Laden der FSC-Materialliste.");
+    }
+  }
+
+  ladeMaterialien().then(() => {
+    console.log("FSC-Materialien geladen:", materialien);
+  });
 
   select.addEventListener('change', () => {
     container.innerHTML = '';
@@ -96,14 +113,26 @@
     for (let i = 1; i <= anzahl; i++) {
       const div = document.createElement('div');
       div.classList.add('component');
+
+      // Dropdown-Optionen dynamisch generieren
+      const materialOptions = materialien
+        .map(m => `<option value="${m}">${m}</option>`)
+        .join('');
+
       div.innerHTML = `
         <h3>Komponente ${i}</h3>
 
         <label>Bezeichnung der Komponente</label>
         <input type="text" name="komponente_${i}_bezeichnung" required>
 
-        <label>Bezeichnung des verwendeten Materials</label>
-        <input type="text" name="komponente_${i}_material" required>
+        <label>Papierbezeichnung</label>
+        <select name="komponente_${i}_material" required>
+          <option value="">Bitte wählen</option>
+          ${materialOptions}
+        </select>
+
+        <label>Grammatur (g/m²)</label>
+        <input type="number" name="komponente_${i}_grammatur" required>
 
         <label>Anzahl Seiten</label>
         <input type="number" name="komponente_${i}_seiten" required>
