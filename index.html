@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FSC Auftragsdokumentation</title>
+<style>
+  body {
+    font-family: system-ui, sans-serif;
+    max-width: 800px;
+    margin: 40px auto;
+    padding: 20px;
+    border-radius: 16px;
+    background: #f9fafb;
+    box-shadow: 0 0 12px rgba(0,0,0,0.1);
+  }
+  h1 { text-align: center; margin-bottom: 20px; }
+  label { display: block; margin-top: 12px; font-weight: 600; }
+  input, select {
+    width: 100%; padding: 6px; margin-top: 4px;
+    border: 1px solid #ccc; border-radius: 6px;
+  }
+  .component { 
+    margin-top: 20px; 
+    padding: 15px; 
+    background: #fff; 
+    border: 1px solid #ddd; 
+    border-radius: 8px; 
+  }
+  button {
+    margin-top: 20px;
+    padding: 10px 20px;
+    background: #2563eb;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+  }
+  button:hover { background: #1e40af; }
+</style>
+</head>
+<body>
+
+<h1>FSC Auftragsdokumentation</h1>
+
+<form id="fscForm">
+  <label>Bearbeiter</label>
+  <select name="bearbeiter" required>
+    <option value="">Bitte wählen</option>
+    <option value="Michael Schmid">Michael Schmid</option>
+    <option value="Marcus Kalle">Marcus Kalle</option>
+  </select>
+
+  <label>Auftragsnummer</label>
+  <input type="text" name="auftragsnummer" required>
+
+  <label>Kundenname</label>
+  <input type="text" name="kunde" required>
+
+  <label>Bezeichnung des Auftrags</label>
+  <input type="text" name="bezeichnung" required>
+
+  <label>Endformat Breite (mm)</label>
+  <input type="number" name="end_breite" required>
+
+  <label>Endformat Höhe (mm)</label>
+  <input type="number" name="end_hoehe" required>
+
+  <label>Bestellte Auflage</label>
+  <input type="number" name="auflage" required>
+
+  <label>Anzahl der Komponenten (1–5)</label>
+  <select id="komponentenAnzahl" required>
+    <option value="">Bitte wählen</option>
+    <option value="1">1</option>
+    <option value="2">2</option>
+    <option value="3">3</option>
+    <option value="4">4</option>
+    <option value="5">5</option>
+  </select>
+
+  <div id="komponentenContainer"></div>
+
+  <button type="submit">Speichern</button>
+</form>
+
+<script>
+  const select = document.getElementById('komponentenAnzahl');
+  const container = document.getElementById('komponentenContainer');
+
+  select.addEventListener('change', () => {
+    container.innerHTML = '';
+    const anzahl = parseInt(select.value);
+    if (!anzahl) return;
+    for (let i = 1; i <= anzahl; i++) {
+      const div = document.createElement('div');
+      div.classList.add('component');
+      div.innerHTML = `
+        <h3>Komponente ${i}</h3>
+        <label>Bezeichnung der Komponente</label>
+        <input type="text" name="komponente_${i}_bezeichnung" required>
+        
+        <label>Bezeichnung des verwendeten Materials</label>
+        <input type="text" name="komponente_${i}_material" required>
+        
+        <label>Anzahl Seiten</label>
+        <input type="number" name="komponente_${i}_seiten" required>
+        
+        <label>Brutto Eingangsbreite (mm)</label>
+        <input type="number" name="komponente_${i}_eingangsbreite" required>
+        
+        <label>Brutto Eingangshöhe (mm)</label>
+        <input type="number" name="komponente_${i}_eingangshoehe" required>
+      `;
+      container.appendChild(div);
+    }
+  });
+
+  document.getElementById('fscForm').addEventListener('submit', async e => {
+    e.preventDefault();
+    const data = Object.fromEntries(new FormData(e.target).entries());
+    console.log('FSC Auftrag:', data);
+    alert('Auftrag wurde gespeichert! (siehe Konsole)');
+
+    // späterer Schritt: an n8n oder Airtable senden
+    // await fetch("https://n8n-deinserver.de/webhook/fscauftrag", {
+    //   method: "POST",
+    //   headers: { "Content-Type": "application/json" },
+    //   body: JSON.stringify(data)
+    // });
+  });
+</script>
+
+</body>
+</html>
