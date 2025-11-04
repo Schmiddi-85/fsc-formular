@@ -120,14 +120,26 @@
     e.preventDefault();
     const data = Object.fromEntries(new FormData(e.target).entries());
     console.log('FSC Auftrag:', data);
-    alert('Auftrag wurde gespeichert! (siehe Konsole)');
 
-    // späterer Schritt: an n8n oder Airtable senden
-    // await fetch("https://n8n-deinserver.de/webhook/fscauftrag", {
-    //   method: "POST",
-    //   headers: { "Content-Type": "application/json" },
-    //   body: JSON.stringify(data)
-    // });
+    // === 👇 HIER deine n8n-Adresse eintragen ========================
+    const webhookUrl = "https://app.n8n.cloud/webhook-test/fscauftrag"; 
+    // ===============================================================
+
+    try {
+      const res = await fetch(webhookUrl, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data)
+      });
+
+      if (res.ok) {
+        alert("Auftrag erfolgreich an n8n gesendet ✅");
+      } else {
+        alert("Fehler beim Senden an n8n ❌");
+      }
+    } catch (err) {
+      alert("Verbindungsfehler: " + err.message);
+    }
   });
 </script>
 
