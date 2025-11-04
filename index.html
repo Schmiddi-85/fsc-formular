@@ -92,25 +92,38 @@
     container.innerHTML = '';
     const anzahl = parseInt(select.value);
     if (!anzahl) return;
+
     for (let i = 1; i <= anzahl; i++) {
       const div = document.createElement('div');
       div.classList.add('component');
       div.innerHTML = `
         <h3>Komponente ${i}</h3>
+
         <label>Bezeichnung der Komponente</label>
         <input type="text" name="komponente_${i}_bezeichnung" required>
-        
+
         <label>Bezeichnung des verwendeten Materials</label>
         <input type="text" name="komponente_${i}_material" required>
-        
+
         <label>Anzahl Seiten</label>
         <input type="number" name="komponente_${i}_seiten" required>
-        
+
+        <label>Seiten pro Druckbogen</label>
+        <input type="number" name="komponente_${i}_seiten_pro_bogen" required>
+
         <label>Brutto Eingangsbreite (mm)</label>
         <input type="number" name="komponente_${i}_eingangsbreite" required>
-        
+
         <label>Brutto Eingangshöhe (mm)</label>
         <input type="number" name="komponente_${i}_eingangshoehe" required>
+
+        <label>FSC Zertifikat</label>
+        <select name="komponente_${i}_fsc_zertifikat" required>
+          <option value="">Bitte wählen</option>
+          <option value="FSC 100%">FSC 100%</option>
+          <option value="FSC Recycled">FSC Recycled</option>
+          <option value="FSC Mix">FSC Mix</option>
+        </select>
       `;
       container.appendChild(div);
     }
@@ -122,7 +135,7 @@
     console.log('FSC Auftrag:', data);
 
     // === 👇 HIER deine n8n-Adresse eintragen ========================
-    const webhookUrl = "https://michaelschmid.app.n8n.cloud/webhook-test/fscauftrag"; 
+    const webhookUrl = "https://app.n8n.cloud/webhook-test/fscauftrag";
     // ===============================================================
 
     try {
@@ -134,6 +147,8 @@
 
       if (res.ok) {
         alert("Auftrag erfolgreich an n8n gesendet ✅");
+        e.target.reset();
+        container.innerHTML = '';
       } else {
         alert("Fehler beim Senden an n8n ❌");
       }
